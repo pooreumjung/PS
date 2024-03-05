@@ -19,7 +19,7 @@ int main() {
 	sort(A.begin(), A.end());
 	long end = A[N - 1];
 	long start =1;
-	long ans = 1;
+	long ans = 0;
 		
 	while (start <= end) {
 		long middle = (start + end) / 2;
