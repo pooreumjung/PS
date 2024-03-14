@@ -14,7 +14,6 @@ priority_queue<edge, vector<edge>, greater<edge>>pq;
 priority_queue<edge, vector<edge>, greater<edge>>q;
 void Union(int start, int end);
 int find(int a);
-int search(int node);
 int N, M;
 int main() {
 
@@ -44,15 +43,7 @@ int main() {
 			Union(cur.start, cur.end);
 		}
 	}
-	/*int min = 9999999;
-	for (int i = 1; i <= N; i++) {
-		int temp = parent[i]; // 임시값 저장
-		parent[i] = i; // 연결 끊어버리기
-		int a = search(i);
-		if (a < min)
-			min = a;
-		parent[i] = temp;
-	}*/
+	
 	cout << sum;
 }
 void Union(int start, int end) {
@@ -67,36 +58,4 @@ int find(int a) {
 		return a;
 	else
 		return parent[a] = find(parent[a]);
-}
-int search(int node) {
-	priority_queue<edge, vector<edge>, greater<edge>>q2;
-	priority_queue<edge, vector<edge>, greater<edge>>q3;
-	while (!q.empty()) {
-		edge cur = q.top();
-		q2.push(cur);
-		q3.push(cur);
-		q.pop();
-	}
-	int edgecount = 0;
-	int sum1 = 0;
-	int sum2 = 0;
-	while (edgecount < N - 2) { // 엣지가 1개더 빠져야됨
-		edge cur = q2.top();
-		int start = cur.start;
-		int end = cur.end;
-		int value = cur.value;
-		q2.pop();
-		if (find(start) == find(end)) {
-			sum1 += value;
-			edgecount++;
-		}
-	}
-	while (!q3.empty()) {
-		edge cur = q3.top();
-		q.push(cur);
-		q3.pop();
-	}
-
-	return sum1;
-
 }
