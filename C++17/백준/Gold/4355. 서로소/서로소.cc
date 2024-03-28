@@ -1,13 +1,10 @@
 #include<iostream>
 #include<cmath>
 using namespace std;
-
 int main() {
-
 	ios::sync_with_stdio(false);
 	cin.tie(NULL);
 	cout.tie(NULL);
-
 	while (true) {
 		long long n;
 		cin >> n;
@@ -24,11 +21,8 @@ int main() {
 			while (n % i == 0)
 				n /= i;
 		}
-
 		if (n > 1)
 			result = result / n * (n - 1);
 		cout << result << "\n";
 	}
-
 }
-
