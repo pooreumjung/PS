@@ -37,7 +37,8 @@ int main() {
 	}
 
 	double result = tsp(0, 1);
-	printf("%.6f", result);
+	cout << fixed;
+	cout << result;
 }
 double tsp(int start, int visit) {
 	if (visit == ((1 << N) - 1))
