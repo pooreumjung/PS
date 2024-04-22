@@ -60,4 +60,3 @@ void countNode(int node) {
 		sevSize[node] += sevSize[next];
 	}
 }
-
