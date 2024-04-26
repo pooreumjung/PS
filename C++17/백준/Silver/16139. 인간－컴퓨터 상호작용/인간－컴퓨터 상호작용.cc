@@ -12,7 +12,6 @@ int main() {
 	cout.tie(NULL);
 	string str;
 	cin >> str;
-
 	int len = str.length();
 	for (int i = 0; i < len; i++) {
 		char a = str[i];
@@ -33,7 +32,7 @@ int main() {
 					dp[i][a] = cnt2[a];
 					cnt2[a]++;
 				}
-			
+				
 			}
 			else
 				dp[i][j] = dp[i - 1][j];
