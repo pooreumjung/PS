@@ -1,46 +1,35 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-set<string>personSet;
-vector<pair<string,string>>v;
+map<string,int>mp;
 int main() {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
 
-    int n,start=0;
+    int n;
     cin >> n;
 
     string s1,s2;
+    bool isStart = false;
 
-    while (n--) {
+    for (int i = 0; i < n; i++) {
         cin>>s1>>s2;
-        v.push_back({s1,s2});
-    }
-
-    for (int i=0;i<v.size();i++) {
-        pair<string,string>p=v[i];
-        if (p.first=="ChongChong") {
-            personSet.insert(p.second);
-            start = i;
-            break;
-        }
-        if (p.second=="ChongChong") {
-            personSet.insert(p.first);
-            start = i;
-            break;
-        }
-    }
-
-    for (int i= start; i<v.size(); i++) {
-        pair<string,string>p=v[i];
-        if (personSet.count(p.first)>0) {
-            personSet.insert(p.second);
+        if (!isStart) {
+            if (s1 == "ChongChong" || s2 == "ChongChong") {
+                isStart = true;
+                mp[s2]++;
+                mp[s1]++;
+            }
         }
 
-        if (personSet.count(p.second) > 0) {
-            personSet.insert(p.first);
+        else {
+            if (mp.count(s1) > 0) {
+                mp[s2]++;
+            }
+            if (mp.count(s2)>0)
+                mp[s1]++;
         }
     }
 
-    cout<<personSet.size();
+    cout<<mp.size();
 }
