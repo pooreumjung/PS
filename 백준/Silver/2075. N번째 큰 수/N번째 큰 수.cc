@@ -8,24 +8,21 @@ int main() {
     int n;
     cin >> n;
 
-    multiset<long long> s;
+    priority_queue<long long , vector<long long>, greater<long long>> q;
     long long num;
 
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
             cin >> num;
             if (i==0) {
-                s.insert(num);
+                q.push(num);
             }
             else {
-                s.insert(num);
-                const auto it = s.begin();
-                s.erase(it);
+                q.push(num);
+                q.pop();
             }
         }
     }
 
-    auto it = s.begin();
-    cout<<*it;
-
+    cout<<q.top();
 }
