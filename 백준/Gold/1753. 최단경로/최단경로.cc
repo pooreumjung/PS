@@ -1,68 +1,62 @@
-#include <iostream>
-#include <queue>
-#include <vector>
-
+#include<iostream>
+#include<vector>
+#include<queue>
+#include<limits.h>
 using namespace std;
 
-int V, E;
-int K;
-int u, v, w;
-int INF = 1000000;
+typedef pair<int, int>edge;
+vector<vector<pair<int, int>>>A; // 인접 리스트
+vector<int>D; // 최단 거리 배열
+vector<bool>visit; // 방문 여부 체크
+priority_queue<edge, vector<edge>, greater<edge>>q;
+int main() {
 
-vector<pair<int, int> > adj[20001];
-int dist[20001];
+	ios::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
 
+	int V, E;
+	cin >> V >> E; // 정점과 간선의 개수
+	int k;
+	cin >> k;
+	A.resize(V + 1);
+	D.resize(V + 1);
+	visit.resize(V + 1);
+	fill(visit.begin(), visit.end(), false);
+	fill(D.begin(), D.end(), INT_MAX);
 
-void dijkstra(int src) {
+	for (int i = 0; i < E; i++) {
+		int u, v, w;
+		cin >> u >> v >> w;
+		A[u].push_back({ v,w }); // 인접 리스트 업데이트
+	}
 
-	dist[src] = 0;
-	priority_queue<pair<int, int> > pq;
-	pq.push(make_pair(0, src));
+	D[k] = 0; // 시작 지점은 0으로
+	q.push({ 0,k });
 
-	while (!pq.empty()) {
-		int cost = -pq.top().first;
-		int here = pq.top().second;
-		pq.pop();
+	while (!q.empty()) {
+		edge cur = q.top();
+		q.pop();
+		int c_v = cur.second; // 노드
+		if (visit[c_v]) // 이미 방문한 노드라면 continue
+			continue;
+		visit[c_v] = true; // 방문 여부 check
 
-		if (dist[here] < cost) continue;
-
-		for (int i = 0; i < adj[here].size(); i++) {
-			int there = adj[here][i].first;
-			int nextDist = cost + adj[here][i].second;
-
-			if (dist[there] > nextDist) {
-				dist[there] = nextDist;
-				pq.push(make_pair(-nextDist, there));
+		for (int i = 0; i < A[c_v].size(); i++) {
+			edge tmp = A[c_v][i];
+			int next = tmp.first; // 방문할 노드
+			int value = tmp.second; // 방문할 노드의 가중치
+			if (D[next] > D[c_v] + value) { // 방문할 곳의 value보다 출발지 + 가중치가 작다면
+				D[next] = value + D[c_v];
+				q.push({ D[next],next });
 			}
 		}
 	}
-}
-
-int main(void)
-{
-	cin.tie(0);
-	ios::sync_with_stdio(false);
-
-	cin >> V >> E;
-	cin >> K;
-
 	for (int i = 1; i <= V; i++) {
-		dist[i] = INF;
-	}
-	
-
-	for (int i = 0; i < E; i++) {
-		cin >> u >> v >> w;
-		adj[u].push_back(make_pair(v, w));
-	}
-
-	dijkstra(K);
-
-	for (int i = 1; i <= V; i++) {
-		if (dist[i] == INF) {
-			cout << "INF" << endl;
-		}
+		if (D[i] == INT_MAX)
+			cout << "INF" << '\n';
 		else
-			cout << dist[i] << endl;
+			cout << D[i] << '\n';
 	}
+
 }

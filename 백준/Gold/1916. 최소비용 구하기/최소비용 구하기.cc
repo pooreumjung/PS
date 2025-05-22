@@ -1,62 +1,59 @@
-#include <iostream>
+#include<iostream>
+#include<limits.h>
+#include<vector>
+#include<queue>
 using namespace std;
 
-int INF = 987654321;
+typedef pair<int, int > edge;
+vector<vector<edge>>mlist;
+vector<int>mdistance;
+vector<bool>visit;
+int dijkstra(int start, int end);
+int main() {
 
-int arr[1001][1001];
-bool v[1001];
-int d[1001];
+	ios::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
 
-int n, m, a, b, c, s, e;
-
-int getSmallIndex() {
-	int min = INF;
-	int index = 1;
-	for (int i = 1; i <= n; i++)
-	{
-		if (d[i] < min && !v[i]) {
-			min = d[i];
-			index = i;
-		}
+	int N, M;
+	cin >> N >> M;
+	mlist.resize(N + 1); // 배열 크기 설정
+	mdistance.resize(N + 1); // 배열 크기 설정
+	visit.resize(N + 1);
+	fill(visit.begin(), visit.end(), false); // 방문 배열 초기화
+	fill(mdistance.begin(), mdistance.end(), INT_MAX); // 최단 거리 배열 초기화
+	
+	for (int i = 0; i < M; i++) {
+		int u, v, w;
+		cin >> u >> v >> w;
+		mlist[u].push_back({ v,w }); // 인접 리스트 업데이트
 	}
-	return index;
+	
+	int start, end; // 시작 지점과 도착 지점
+	cin >> start >> end;
+
+	cout << dijkstra(start, end); // 결과 출력
 }
-
-void dijkstra(int start) {
-	for (int i = 1; i <= n; i++) {
-		d[i] = arr[start][i];
-	}
-	v[start] = 1;
-	for (int i = 1; i <= n - 2; i++) 
-	{
-		int current = getSmallIndex();
-		v[current] = 1;
-		for (int j = 1; j <= n; j++)
-		{
-			if (!v[j]) {
-				if (d[current] + arr[current][j] < d[j]) {
-					d[j] = d[current] + arr[current][j];
-				}
+int dijkstra(int start, int end) {
+	priority_queue < edge, vector<edge>, greater<edge>>q; // 큐 생성
+	mdistance[start] = 0;
+	q.push({ 0,start });
+	while (!q.empty()) {
+		edge cur = q.top();
+		int c_v = cur.second;
+		q.pop();
+		if (visit[c_v]) // 탐색했던 노드라면 건너뛰기
+			continue;
+		visit[c_v] = true; // 방문 표시
+		for (int i = 0; i < mlist[c_v].size(); i++) {
+			edge tmp = mlist[c_v][i];
+			int next = tmp.first; // 방문할 곳
+			int value = tmp.second; // 방문하는 곳으로의 가중치
+			if (mdistance[next] > mdistance[c_v] + value) {
+				mdistance[next] = mdistance[c_v] + value;
+				q.push({ mdistance[next],next });
 			}
 		}
 	}
-}
-
-int main() {
-	for (int i = 1; i < 1001; i++)
-		for (int j = 1; j < 1001; j++)
-			arr[i][j] = INF;
-		
-	cin >> n >> m;
-	for (int i = 0; i < m; i++)
-	{
-		cin >> a >> b >> c;
-		if (arr[a][b] > c)
-			arr[a][b] = c;
-	}
-	cin >> s >> e;
-
-	dijkstra(s);
-	cout << d[e];
-
+	return mdistance[end];
 }
