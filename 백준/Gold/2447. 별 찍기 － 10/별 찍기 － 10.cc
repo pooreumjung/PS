@@ -1,38 +1,49 @@
-#include<iostream>
+#include <iostream>
 using namespace std;
-int N;
-char **arr;
-void print_star(int y,int x,int len)
+
+char arr[2200][2200];
+
+void draw(int x, int y, int n)
 {
-	if (len == 1)
-	{
-		arr[y][x] = '*';
-		return;
-	}
-	int nx = len / 3;
-	print_star(y, x, nx);
-	print_star(y, x + nx, nx);
-	print_star(y, x + nx * 2, nx);
+    if (n == 1)
+    {
+        arr[x][y] = '*';
+        return;
+    }
 
-	print_star(y + nx, x, nx);
-	for (int i = y+nx; i < y + nx * 2; i++)
-		for (int j = x+nx; j < x + nx * 2; j++) arr[i][j] = ' ';
-	print_star(y + nx, x + nx * 2, nx);
+    int size = n / 3;
 
-	print_star(y + nx * 2,x, nx);
-	print_star(y + nx * 2, x + nx, nx);
-	print_star(y + nx * 2, x + nx * 2, nx);
+    for (int i = 0; i < 3; i++)
+    {
+        for (int j = 0; j < 3; j++)
+        {
+            if (i == 1 && j == 1)
+                continue; // 가운데 비우기
+            draw(x + i * size, y + j * size, size);
+        }
+    }
 }
+
 int main()
 {
-	cin >> N;
-	arr = new char*[N];
-	for (int i = 0; i < N; i++) arr[i] = new char[N];
-	print_star(0,0,N);
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
 
-	for (int i = 0; i < N; i++)
-	{
-		for (int j = 0; j < N; j++) cout << arr[i][j];
-		cout << '\n';
-	}
+    int N;
+    cin >> N;
+
+    for (int i = 0; i < N; i++)
+        for (int j = 0; j < N; j++)
+            arr[i][j] = ' ';
+
+    draw(0, 0, N);
+
+    for (int i = 0; i < N; i++)
+    {
+        for (int j = 0; j < N; j++)
+        {
+            cout << arr[i][j];
+        }
+        cout << '\n';
+    }
 }
