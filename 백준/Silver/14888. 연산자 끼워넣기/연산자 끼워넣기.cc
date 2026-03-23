@@ -5,47 +5,24 @@ using namespace std;
 
 int N, num;
 long minResult = 9999999999, maxResult = -999999999;
-char opArr[12], opArr2[12];
 vector<int> v;
-bool visited[12];
 int arr[4];
-// 초기화 함수
-void init(int op, int index)
-{
-    switch (op)
-    {
-    case 0:
-        opArr[index] = '+';
-        break;
-    case 1:
-        opArr[index] = '-';
-        break;
-    case 2:
-        opArr[index] = '*';
-        break;
-    case 3:
-        opArr[index] = '/';
-        break;
-    default:
-        break;
-    }
-}
 // 계산하기
-long calculate(long num1, long num2, char op)
+long calculate(long num1, long num2, int op)
 {
     long temp = 0;
     switch (op)
     {
-    case '+':
+    case 0:
         temp = num1 + num2;
         break;
-    case '-':
+    case 1:
         temp = num1 - num2;
         break;
-    case '*':
+    case 2:
         temp = num1 * num2;
         break;
-    case '/':
+    case 3:
         temp = num1 / num2;
         break;
     default:
@@ -54,36 +31,22 @@ long calculate(long num1, long num2, char op)
 
     return temp;
 }
-void dfs(int depth)
+void dfs(int depth, long state)
 {
-    if (depth == N - 1)
+    if (depth == N)
     {
-        int index = 0;
-        long sum = 0;
-        for (int i = 0; i < N; i++)
-        {
-            if (i == 0)
-                sum = v[i];
-            else
-            {
-                sum = calculate(sum, v[i], opArr2[index]);
-                index++;
-            }
-        }
-        minResult = min(minResult, sum);
-        maxResult = max(maxResult, sum);
+        minResult = min(minResult, state);
+        maxResult = max(maxResult, state);
         return;
     }
 
-    for (int i = 0; i < N - 1; i++)
+    for (int i = 0; i < 4; i++)
     {
-        if (!visited[i])
+        if (arr[i])
         {
-            visited[i] = true;
-            opArr2[depth] = opArr[i];
-            dfs(depth + 1);
-            opArr2[depth] = ' ';
-            visited[i] = false;
+            arr[i]--;
+            dfs(depth + 1, calculate(state, v[depth], i));
+            arr[i]++;
         }
     }
 }
@@ -93,7 +56,6 @@ int main()
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
 
-    // 정수 배열 입력
     cin >> N;
     for (int i = 0; i < N; i++)
     {
@@ -101,19 +63,10 @@ int main()
         v.push_back(num);
     }
 
-    // 문자 배열 초기화
-    int index = 0;
     for (int i = 0; i < 4; i++)
-    {
         cin >> arr[i];
-        for (int j = 0; j < arr[i]; j++)
-        {
-            init(i, index);
-            index++;
-        }
-    }
 
-    dfs(0);
+    dfs(1, v[0]);
     cout << maxResult << '\n'
          << minResult;
 }
