@@ -1,33 +1,36 @@
-#include<iostream>
-#include<vector>
-#include<algorithm>
+#include <iostream>
+#include <vector>
+#include <algorithm>
 using namespace std;
 
-int main() {
+vector<pair<int, int>> v;
+int main()
+{
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
 
-	ios::sync_with_stdio(false);
-	cin.tie(NULL);
-	cout.tie(NULL);
+    int n, start, end;
+    cin >> n;
 
-	
-	int N;
-	cin >> N;
-	vector<pair<int, int>>A(N);
-	
-	for (int i = 0; i < N; i++) {
-		cin >> A[i].second;
-		cin >> A[i].first;
-	}
+    for (int i = 0; i < n; i++)
+    {
+        cin >> start >> end;
+        v.push_back(make_pair(end, start));
+    }
 
-	sort(A.begin(), A.end());
-	int sum = 0;
-	int end = -1;
+    // 각각 시작시간과 끝나는 시간에 대해서 오름차순 정렬
+    sort(v.begin(), v.end());
 
-	for (int i = 0; i < N; i++) {
-		if (A[i].second >= end) {
-			end = A[i].first;
-			sum++;
-		}
-	}
-	cout << sum;
+    // 최소로 빨리 끝나는 시간 설정
+    int minEnd = v[0].first, count = 1;
+    for (int i = 1; i < n; i++)
+    {
+        if (v[i].second >= minEnd)
+        {
+            minEnd = v[i].first;
+            count++;
+        }
+    }
+
+    cout << count;
 }
