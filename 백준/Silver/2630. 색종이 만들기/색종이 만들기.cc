@@ -1,52 +1,65 @@
-#include<bits/stdc++.h>
+#include <iostream>
 using namespace std;
 
-int arr [129][129];
+int arr[129][129];
+int whiteCount = 0, blueCount = 0;
 
-int zeroCount = 0, oneCount = 0;
+void solve(int x, int y, int size)
+{
+    int color = arr[x][y];
+    bool same = true;
 
-void abc(int x,int y, int n) {
-    int value = arr[x][y];
-    bool isSame = true;
-
-    for (int i = x; i < x+n; i++) {
-        for (int j = y; j < y+n; j++) {
-            if (arr[i][j]!=value) {
-                isSame = false;
+    // 현재 영역이 모두 같은 색인지 검사
+    for (int i = x; i < x + size; i++)
+    {
+        for (int j = y; j < y + size; j++)
+        {
+            if (arr[i][j] != color)
+            {
+                same = false;
                 break;
             }
         }
-        if (!isSame)
+        if (!same)
             break;
     }
 
-    if (isSame) { // 모두 같다면
-        if (value ==0) zeroCount++;
-        else oneCount++;
+    // 모두 같은 색이면 개수 증가
+    if (same)
+    {
+        if (color == 0)
+            whiteCount++;
+        else
+            blueCount++;
+        return;
     }
 
-    else {
-        int newSize = n/2;
-        abc(x,y,newSize); // 왼쪽 위
-        abc(x,y+newSize,newSize); // 오른쪽 위
-        abc(x+newSize,y,newSize); // 왼쪽 아래
-        abc(x+newSize,y+newSize,newSize); // 오른쪽 아래
-    }
-
+    // 섞여 있으면 4등분
+    int half = size / 2;
+    solve(x, y, half);               // 좌상
+    solve(x, y + half, half);        // 우상
+    solve(x + half, y, half);        // 좌하
+    solve(x + half, y + half, half); // 우하
 }
-int main() {
+
+int main()
+{
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
 
-    int n;
-    cin>>n;
+    int N;
+    cin >> N;
 
-    for(int i=0;i<n;i++) {
-        for(int j=0;j<n;j++) {
-            cin>>arr[i][j];
+    for (int i = 1; i <= N; i++)
+    {
+        for (int j = 1; j <= N; j++)
+        {
+            cin >> arr[i][j];
         }
     }
 
-    abc(0,0,n);
-    cout<<zeroCount<<"\n"<<oneCount;
+    solve(1, 1, N);
+
+    cout << whiteCount << "\n"
+         << blueCount;
 }
