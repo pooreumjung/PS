@@ -1,48 +1,56 @@
-#include<bits/stdc++.h>
+#include <iostream>
 using namespace std;
 
-vector<vector<int>> video;
-
-void quadTree(int x, int y, int size) {
-    int first = video[x][y];
+char arr[65][65];
+void solve(int x, int y, int size)
+{
+    char temp = arr[x][y];
     bool isSame = true;
 
-    for (int i = x; i < x + size; ++i) {
-        for (int j = y; j < y + size; ++j) {
-            if (video[i][j] != first) {
+    // 같은지 탐색
+    for (int i = x; i < x + size; i++)
+    {
+        for (int j = y; j < y + size; j++)
+        {
+            if (temp != arr[i][j])
+            {
                 isSame = false;
                 break;
             }
         }
-        if (!isSame) break;
+        if (!isSame)
+            break;
     }
 
-    if (isSame) {
-        cout << first;
-    } else {
-        cout << "(";
-        int newSize = size / 2;
-        quadTree(x, y, newSize);                   // 왼쪽 위
-        quadTree(x, y + newSize, newSize);         // 오른쪽 위
-        quadTree(x + newSize, y, newSize);         // 왼쪽 아래
-        quadTree(x + newSize, y + newSize, newSize); // 오른쪽 아래
-        cout << ")";
+    // 같은 경우
+    if (isSame)
+    {
+        cout << temp;
+        return;
     }
+
+    int half = size / 2;
+    cout << "(";
+    solve(x, y, half);
+    solve(x, y + half, half);
+    solve(x + half, y, half);
+    solve(x + half, y + half, half);
+    cout << ")";
 }
 
-int main() {
-    int n;
-    cin >> n;
-    video.resize(n, vector<int>(n));
+int main()
+{
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
 
-    for (int i = 0; i < n; ++i) {
-        string line;
-        cin >> line;
-        for (int j = 0; j < n; ++j) {
-            video[i][j] = line[j] - '0';
-        }
+    int N;
+    cin >> N;
+
+    for (int i = 1; i <= N; i++)
+    {
+        for (int j = 1; j <= N; j++)
+            cin >> arr[i][j];
     }
 
-    quadTree(0, 0, n);
-    return 0;
+    solve(1, 1, N);
 }
