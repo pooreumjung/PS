@@ -1,48 +1,56 @@
-#include <map>
-#include <iostream>
+#include <bits/stdc++.h>
 using namespace std;
-const int MOD = 1000000007;
-long long N;
-map<long long, long long> fibonacciDP;
 
-long long fibonacci(long long cnt);
+typedef long long ll;
+typedef vector<vector<ll>> Matrix;
+const ll MOD = 1e9 + 7;
 
-int main(void)
+Matrix multiply(const Matrix &A, const Matrix &B)
 {
-	ios_base::sync_with_stdio(false);
-	cin.tie(nullptr); cout.tie(nullptr);
-
-	cin >> N;
-
-	cout << fibonacci(N) << '\n';
-
-	return 0;
+    int n = A.size();
+    Matrix C(n, vector<ll>(n, 0));
+    for (int i = 0; i < n; i++)
+        for (int k = 0; k < n; k++)
+            for (int j = 0; j < n; j++)
+                C[i][j] = (C[i][j] + A[i][k] * B[k][j]) % MOD;
+    return C;
 }
 
-long long fibonacci(long long cnt)
+Matrix power(Matrix A, ll b)
 {
-	if (cnt == 0) return 0;
-	else if (cnt == 1) return 1;
-	else if (cnt == 2) return 1;
-	else if (fibonacciDP.find(cnt) != fibonacciDP.end()) return fibonacciDP[cnt];
+    if (b == 1)
+        return A;
 
-	long long n, fn, fnPlus, fnMinus;
-	if (cnt % 2)
-	{
-		// f(2n+1) = f(n+1) * f(n+1) + f(n) * f(n) // 홀수 식
-		n = (cnt - 1) / 2;
-		fnPlus = fibonacci(n + 1);
-		fn = fibonacci(n);
+    Matrix half = power(A, b / 2);
+    Matrix result = multiply(half, half);
 
-		return (fibonacciDP[cnt] = ( (fnPlus * fnPlus) % MOD + (fn * fn) % MOD) % MOD );
-	}
-	else
-	{
-		// f (2n) = f(n) * (f(n) + 2 * f(n-1))  // 짝수 식
-		n = cnt / 2;
-		fnMinus = fibonacci(n - 1);
-		fn = fibonacci(n);
+    if (b % 2 == 1)
+        result = multiply(result, A);
 
-		return (fibonacciDP[cnt] = (fn * ((fn + 2 * fnMinus) % MOD)) % MOD );
-	}
+    return result;
+}
+
+int main()
+{
+    ios::sync_with_stdio(false);
+    cin.tie(NULL);
+
+    ll n;
+    cin >> n;
+
+    if (n == 0)
+    {
+        cout << 0;
+        return 0;
+    }
+    if (n == 1)
+    {
+        cout << 1;
+        return 0;
+    }
+
+    Matrix A = {{1, 1}, {1, 0}};
+    Matrix result = power(A, n - 1);
+
+    cout << result[0][0];
 }
