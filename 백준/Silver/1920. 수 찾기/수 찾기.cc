@@ -1,36 +1,51 @@
-#define _CRT_SECURE_NO_WARNINGS
-#include <stdio.h>
-#include <stdlib.h>
+#include <iostream>
+#include <algorithm>
+#include <vector>
+using namespace std;
 
-int static compare(const void* first, const void* second) {
-    if (*(int*)first > *(int*)second) return 1;
-    else if (*(int*)first < *(int*)second) return -1;
-    else return 0;
-}
-void result(int *arr, int n, int x) {
-    int min = 0, max = n - 1;
-    while (min <= max) {
-        int mid = (min + max) / 2;
-        if (arr[mid] == x) {
-            printf("%d\n", 1);
-            return;
+vector<long long> v;
+int findNum(long long num)
+{
+    int start = 0, end = v.size() - 1;
+    while (start <= end)
+    {
+        int mid = (start + end) / 2;
+        if (num > v[mid])
+        {
+            start = mid + 1;
         }
-        else if (arr[mid] > x) max = mid - 1;
-        else min = mid + 1;
-    }
-    printf("%d\n", 0);
-    return;
-}
-int main() {
-    int n, m, num;
-    scanf("%d", &n);
-    int *arr= (int*)malloc(sizeof(int) * n);
-    for (int i = 0; i < n; i++) scanf("%d", &arr[i]);
-    qsort(arr, n, sizeof(int), compare);
-    scanf("%d", &m);
-    for (int i = 0; i < m; i++) {
-        scanf("%d", &num);
-        result(arr,n,num);
+        else if (num < v[mid])
+        {
+            end = mid - 1;
+        }
+        else
+        {
+            return 1;
+        }
     }
     return 0;
+}
+int main()
+{
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int n, m;
+    cin >> n;
+
+    for (int i = 0; i < n; i++)
+    {
+        long long num;
+        cin >> num;
+        v.push_back(num);
+    }
+    sort(v.begin(), v.end());
+
+    cin >> m;
+    for (int i = 0; i < m; i++)
+    {
+        long long temp;
+        cin >> temp;
+        cout << findNum(temp) << '\n';
+    }
 }
