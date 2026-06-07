@@ -46,34 +46,24 @@ int solution(string s1, string s2) {
         
     if(mp1.size() == 0 && mp2.size()==0)
         return 65536;
-    for(auto it=mp1.begin(); it!=mp1.end();it++){
-        string s = it->first;
-        auto it2 = mp2.find(s);
-        isUsed[s] = true;
-        
-        // 교집합이 아닌 경우
-        if(it2 == mp2.end())           
-            total += it->second;
-                
-        // 교집합인 경우
+    
+    for(auto it=mp1.begin(); it!=mp1.end();it++){ 
+        auto it2 = mp2.find(it->first);
+        if(it2 == mp2.end())
+           total += it->second;                                                            
         else{
             total += max(it->second, it2->second);
             inter += min(it->second, it2->second);
         }        
+       isUsed[it->first] = true;
     }
     
-    for(auto it=mp2.begin(); it!=mp2.end();it++){
-        string s = it->first;
-        auto it2 = isUsed.find(s);
-        if(it2 -> second)
+    for(auto it=mp2.begin(); it!=mp2.end();it++){        
+        if(isUsed.find(it->first) -> second)
             continue;
                 
         total += it->second;        
     }
-    
-    
-    
-    answer = floor(inter*1.0/total*65536);
         
-    return answer;
+    return floor(inter*1.0/total*65536);        
 }
