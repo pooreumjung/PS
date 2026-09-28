@@ -1,47 +1,50 @@
 #include <string>
+#include <map>
+#include <unordered_set>
 #include <vector>
-#include <unordered_map>
-#include <set>
-#include <iostream>
 
 using namespace std;
 
-unordered_map<string,set<string>>checked; // checked는 신고당한 사람과 신고한 사람들 기록
-unordered_map<string,int>result;
-
-pair<string,string> splitReport(string s){
-    pair<string,string>temp;
-    int index = s.find(' ');
-    temp.first = s.substr(0, index);
-    temp.second = s.substr(index+1);
-    return temp;
-}
+// 한 번에 한 명의 유저 신고, 횟수 제한 x, 그러나 1회로 기록
+// k번 이상 신고된 유자 => 게시판 정지, 
+map<string, unordered_set<string>> list1, list2; // list1은 string을 신고한 사람들, list2는 string이 신고한 사람들
+unordered_set<string> reportList; // k번 이상 신고 당해 정지 먹은 사람들
+vector<int>result;
 
 vector<int> solution(vector<string> id_list, vector<string> reports, int k) {
-    vector<int> answer;
     
-    for (int i = 0; i < reports.size(); i++) {
-        pair<string, string> cur = splitReport(reports[i]);            
-        checked[cur.second].insert(cur.first);                
+    // 세팅
+    for(string report: reports){
+        int index = report.find(' ');
+        string name1 = report.substr(0,index); // 신고한 사람
+        string name2 = report.substr(index+1); // 신고당한 사람
+        
+        list1[name2].insert(name1);
+        list2[name1].insert(name2);
     }
     
-    // k번 이상 신고당했는지
-    for (auto it = checked.begin(); it != checked.end(); it++) {
-        if (it->second.size() >= k) {
-
-            set<string> s = it->second;
-
-            for (auto user : s) {
-                result[user]++;
+    result.resize(id_list.size(),0);
+            
+    // k번 이상 신고당한사람 찾기
+    for(auto it = list1.begin(); it!= list1.end(); it++){
+        if(it->second.size() >= k)
+            reportList.insert(it->first);
+    }
+    
+    // result 세팅
+    int index = 0;
+    for(string id:id_list){
+        auto it = list2.find(id);
+        if(it != list2.end()){
+            for(string name: it->second){
+                if(reportList.find(name) != reportList.end())
+                  result[index]++;  
             }
         }
+        index++;
     }
-    
-    for(int i=0;i<id_list.size();i++)
-        answer.push_back(result[id_list[i]]);
-    return answer;
+ 
+    return result;
 }
 
-// 한 번에 한 명의 유저만 신고, 신고 횟수 제한 X, 서로 다른 유저 계속 신고, 동일한 유저에 대해서는 1번만
-// k번 이상 신고된 유저는 사용 정지
-// id_list => 1000, report => 200000
+// frodo 2번 신고 당함, neo 두 번 신고 당함, muzi 한 번 신고당함
