@@ -1,35 +1,32 @@
 #include <string>
 #include <vector>
-#include <iostream>
+#include <map>
 
 using namespace std;
+map<int,int>mp;
 
 vector<int> solution(vector<int> progresses, vector<int> speeds) {
-    vector<int> answer, temp;
-    // temp에 각 progresses가 며칠이 더 필요한지 계산
-    for(int i =0; i<progresses.size();i++){
-        int dif = 100 - progresses[i];
-        if(dif % speeds[i] == 0)
-            temp.push_back(dif/speeds[i]);
+    vector<int> answer;
+    int pre = 0, result=0;
+    
+    for(int i=0;i<progresses.size();i++){
+        int diff = 100 - progresses[i];
+                
+        if(diff% speeds[i] == 0)
+            result = diff/speeds[i];
+                           
         else
-            temp.push_back(dif/speeds[i]+1);
-        cout<<temp[i]<<" ";
-    }
-    cout<<'\n';
-    
-    
-    int count = 1, di = temp[0];
-    for(int i=1; i<progresses.size();i++){
-        if(temp[i] <= di)
-            count++;
+            result = diff/speeds[i]+1;
+        
+        if(result < pre)
+            mp[pre]++;
         else{
-            answer.push_back(count);            
-            count = 1;
-            di = temp[i];
-            cout<<di<<" ";
-        }            
+            pre = result;
+            mp[pre]++;
+        }                    
     }
-    if(count > 0)
-        answer.push_back(count);
+    
+    for(auto it = mp.begin(); it!=mp.end(); it++)
+        answer.push_back(it->second);
     return answer;
 }
