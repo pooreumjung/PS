@@ -1,56 +1,65 @@
+#include <map>
+#include <cmath>
 #include <string>
 #include <vector>
-#include <map>
 #include <iostream>
-#include <cmath>
-
+#include <algorithm>
 using namespace std;
 
-map<string, pair<int,int>>parkSum;
-void init(string record){
-    string time = record.substr(0,5), number = record.substr(6,4), op = record.substr(11);
-    string hour = time.substr(0,2), minute = time.substr(3);
-    int totalTime = stoi(hour)*60 + stoi(minute);    
+map<string, int>mp, sumList;
+vector<int>result;
+vector<pair<string,int>>v2;
+
+// 입출차 처리 함수
+void func(vector<string>v){
+    string time = v[0], number = v[1], state = v[2];
+    int hour = stoi(time.substr(0,2)), minute = stoi(time.substr(3));
+    int total = hour*60 + minute;
         
-    auto it = parkSum.find(number);
-    // 입차인 경우
-    if(op == "IN"){        
-        // 맨 처음인 경우
-        if(it == parkSum.end())            
-            parkSum[number] = make_pair(totalTime,0);        
-        else
-            it->second.first = totalTime;        
-    }
+    auto it = mp.find(number);
+        
     // 출차인 경우
-    else{
-        int lastTime = it->second.first;
-        int diff = totalTime - lastTime;
-        parkSum[number] = make_pair(-1, it->second.second+diff);
-    }    
+    if(it != mp.end()){
+        int diff = total - it->second;        
+        sumList[number] += diff;
+        
+        mp.erase(it);
+    }
+    // 입차인 경우
+    else
+        mp[number] = total;
 }
 
 vector<int> solution(vector<int> fees, vector<string> records) {
-    vector<int>answer;
-    // 초기 세팅
-    for(string record:records)
-        init(record);
+    for(string record:records){
+        vector<string>v;
+        size_t pos = 0, start = 0; 
+        while((pos = record.find(' ', start)) != string::npos){
+            string temp = record.substr(start, pos-start);
+            v.push_back(temp);
+            
+            start = pos+1;
+        }
+        v.push_back(record.substr(start));
+        
+        func(v);
+    }    
     
-    // 빠져나간 차가 없는지 한번 더 검사
-    for(auto it=parkSum.begin(); it!=parkSum.end();it++){
-        if(it->second.first != -1){
-            it->second.second += (1439-it->second.first);
-            it->second.first = 0;
-        }
-                    
-        int total = it->second.second;         
-        if(total <= fees[0])
-            answer.push_back(fees[1]);
-        else{
-            int diff = ceil((1.0*total-fees[0])/fees[2]);
-            int sum =  fees[1] + diff*fees[3];
-            answer.push_back(sum);
-        }
+    // 예외 검사
+    for(auto it = mp.begin(); it!=mp.end();it++){
+        int diff = 1439 - it->second;                
+        sumList[it->first] += diff;
     }
     
-    return answer;
+    for(auto it=sumList.begin(); it!=sumList.end(); it++){
+        
+        int diff = it->second - fees[0];
+        if(diff <=0)
+            diff = 0;
+        
+        int sum = fees[1] + (int)(ceil((double)diff / fees[2])) * fees[3];
+        result.push_back(sum);
+    }
+    
+    return result;
 }
