@@ -2,19 +2,29 @@
 #include <vector>
 
 using namespace std;
+int answer = 0, numberSize = 0;
+vector<bool>visited;
+vector<int>arr;
 
-int answer=0;
-void func(vector<int>numbers, int cur,int index, int target){
-    if(index == numbers.size()){
-        if(cur == target)
+void dfs(int target, int sum, int index){
+    if(index == numberSize){
+        if(sum == target)
             answer++;
         return;
     }
-                  
-    func(numbers, cur+numbers[index],index+1,target);
-    func(numbers, cur-numbers[index],index+1, target);            
+    
+    
+    dfs(target, sum+arr[index], index+1);
+    dfs(target, sum-arr[index], index+1);
+    
+    
 }
-int solution(vector<int> numbers, int target) {    
-    func(numbers, 0,0, target);
+
+int solution(vector<int> numbers, int target) {
+    numberSize = numbers.size();
+    visited.resize(numberSize, false);
+    arr = numbers;
+    
+    dfs(target, 0,0);    
     return answer;
 }
