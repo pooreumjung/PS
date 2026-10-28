@@ -3,41 +3,42 @@
 
 using namespace std;
 
-vector<int> parent;
-int findParent(int x){
-    if(parent[x] == x)
-        return x;
-    return parent[x] = findParent(parent[x]);
+vector<vector<int>>graph;
+vector<bool>visited;
+
+// 1 1 0
+// 1 1 0
+// 0 0 1
+void dfs(int start){
+    visited[start] = true;
+    vector<int>v = graph[start];
+    if(v.size() == 0) return;
+    
+    for(int i=0; i<v.size();i++){
+        int next = v[i];
+        if(!visited[next])
+            dfs(next);
+    }
 }
-void init(int n){
-    parent.resize(n+1);
-    for(int i=1;i<=n;i++)
-        parent[i] = i;
-}
-void unionParent(int a, int b){
-    a = findParent(a);
-    b = findParent(b);
-    if(a != b)
-        parent[b] = a;
-}
+
 int solution(int n, vector<vector<int>> computers) {
+    int answer = 0;
+    graph.resize(n);
+    visited.resize(n, false);
     
-    init(n);
-    
-    // 연결된 컴퓨터끼리 union
-    for(int i=0; i<n; i++){
-        for(int j=0; j<n; j++){
+    for(int i=0; i<computers.size();i++){
+        for(int j=0; j<computers[i].size();j++){
             if(i == j) continue;
-            if(computers[i][j] == 1){
-                unionParent(i, j);
-            }
+            if(computers[i][j] == 1)
+                graph[i].push_back(j);
         }
     }
     
-    int answer = 0;
-    for(int i=0; i<n; i++){
-        if(parent[i] == i)
+    for(int i=0;i<n;i++){
+        if(!visited[i]){
+            dfs(i);
             answer++;
+        }
     }
     
     return answer;
