@@ -1,80 +1,68 @@
 #include <string>
 #include <vector>
-#include <queue>
+#include <tuple>
 #include <iostream>
+#include <queue>
 
 using namespace std;
+
 int dx[4] = {0,1,0,-1};
-int dy[4] = {1,0,-1,0};
+int dy[4] = {-1,0,1,0};
 
-int startX, startY;
-int rows, columns;
+int startX, startY, endX, endY;
+vector<string>board;
+queue<pair<int,int>>q;
+vector<vector<int>>dist;
 
-vector<vector<bool>> visited;
-vector<vector<int>> arr;
-
-// 출발지대, 도착지대 구하기
-void init(vector<string> board){
-    
-    visited.assign(rows, vector<bool>(columns, false));
-    arr.assign(rows, vector<int>(columns, -1));
-    
-    for(int i=0;i<rows;i++){
-        for(int j=0;j<columns;j++){
+// 시작점, 도착점 찾기
+void init(){
+    for(int i=0;i<board.size();i++){
+        for(int j=0; j<board[i].length();j++){
             if(board[i][j] == 'R'){
                 startX = i;
                 startY = j;
-                break;
-            }                                      
+            }
+            else if(board[i][j] == 'G'){
+                endX = i;
+                endY = j;
+            }
         }
     }
 }
-
-int solution(vector<string> board) {
-    rows = board.size(); 
-    columns = board[0].size();    
+int solution(vector<string> board2) {
+    int answer = 0, rowSize = board2.size(), columnSize = board2[0].length();
+    board = board2;
+    init();
     
-    init(board);
-    queue<tuple<int,int,int>>q; // x, y, 이동 횟수
-                
-    visited[startX][startY] = true;
-    arr[startX][startY] = 0;
-    q.push(make_tuple(startX, startY, 0));
+    dist.resize(rowSize, vector<int>(columnSize,-1));
+    dist[startX][startY] = 0;
+    q.push(make_pair(startX, startY));
     
     while(!q.empty()){
-        auto [curX, curY, count] = q.front();
+        pair<int,int> cur = q.front();
         q.pop();
         
-        if(board[curX][curY] == 'G')
-            return count;
-        
-        for(int dir = 0; dir<4; dir++){            
-            int nextX = curX;
-            int nextY = curY;
-            
-            // 벽 또는 장애물 지점까지 이동
+        for(int i=0;i<4;i++){
+            int nx = cur.first;
+            int ny = cur.second;
+                                    
             while(true){
-                int nx = nextX + dx[dir];
-                int ny = nextY + dy[dir];
+                int tx = nx + dx[i];
+                int ty = ny + dy[i];
                 
-                // 벗어나면 멈추기
-                if(nx < 0 || ny < 0 || nx >= rows || ny >= columns || board[nx][ny] == 'D')
-                    break; 
+                if(tx <0 || ty<0 || tx>=rowSize || ty >=columnSize) break;                                                
+                if(board[tx][ty] == 'D') break;
                 
-                nextX = nx;
-                nextY = ny;
+                nx = tx;
+                ny = ty;
             }
             
-            // 이미 방문 지점
-            if(visited[nextX][nextY])
-                continue;
-            
-            visited[nextX][nextY] = true;
-            arr[nextX][nextY] = count + 1;
-            
-            q.push(make_tuple(nextX, nextY, count+1));
-        }
+            if(dist[nx][ny] == -1){
+                dist[nx][ny] = dist[cur.first][cur.second]+1;
+                q.push(make_pair(nx,ny));
+            }            
+        }                
     }
         
-   return -1;
+    return dist[endX][endY];
 }
