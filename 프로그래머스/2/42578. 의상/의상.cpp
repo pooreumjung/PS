@@ -4,19 +4,21 @@
 
 using namespace std;
 
-int solution(vector<vector<string>> clothes) {
-    map<string, int> mp;
+map<string, int>mp;
 
-    for(int i = 0; i < clothes.size(); i++){
-        string type = clothes[i][1];
+int solution(vector<vector<string>> clothesList) {
+    int answer = 0;
+    for(vector<string>clothes: clothesList){
+        string name = clothes[0];
+        string type = clothes[1];
+        
         mp[type]++;
     }
-
-    int answer = 1;
-
-    for(auto it = mp.begin(); it != mp.end(); it++){
-        answer *= (it->second + 1);
-    }
-
-    return answer - 1;
+    
+    int total = 1;
+    for(auto const&[type,count]: mp)
+        total *= (count+1);
+    
+    answer = total-1;    
+    return answer;
 }
