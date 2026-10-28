@@ -1,65 +1,59 @@
-#include <map>
-#include <cmath>
 #include <string>
 #include <vector>
+#include <map>
+#include <cmath>
 #include <iostream>
-#include <algorithm>
 using namespace std;
 
-map<string, int>mp, sumList;
-vector<int>result;
-vector<pair<string,int>>v2;
+map<string,int> recordList, feeList;
 
-// 입출차 처리 함수
-void func(vector<string>v){
-    string time = v[0], number = v[1], state = v[2];
-    int hour = stoi(time.substr(0,2)), minute = stoi(time.substr(3));
+// 처리함수
+int func(string time, string number, string op){
+    int hour = stoi(time.substr(0,2));
+    int minute = stoi(time.substr(3));
     int total = hour*60 + minute;
-        
-    auto it = mp.find(number);
-        
-    // 출차인 경우
-    if(it != mp.end()){
-        int diff = total - it->second;        
-        sumList[number] += diff;
-        
-        mp.erase(it);
+    int diff = 0;
+    
+    if(op == "IN")
+        recordList[number] = total;
+    else{
+        diff = total-recordList[number];            
+        recordList.erase(number);
     }
-    // 입차인 경우
-    else
-        mp[number] = total;
+    
+    return diff;
 }
-
 vector<int> solution(vector<int> fees, vector<string> records) {
+    vector<int> answer;
+        
+    // 전처리
     for(string record:records){
-        vector<string>v;
-        size_t pos = 0, start = 0; 
-        while((pos = record.find(' ', start)) != string::npos){
-            string temp = record.substr(start, pos-start);
-            v.push_back(temp);
-            
-            start = pos+1;
-        }
-        v.push_back(record.substr(start));
+        string time = record.substr(0,5);
+        string number = record.substr(6,4);
+        string op = record.substr(11);
         
-        func(v);
-    }    
-    
-    // 예외 검사
-    for(auto it = mp.begin(); it!=mp.end();it++){
-        int diff = 1439 - it->second;                
-        sumList[it->first] += diff;
+        int diff = func(time, number, op);
+        
+        if(op == "OUT")
+            feeList[number] += diff;
     }
     
-    for(auto it=sumList.begin(); it!=sumList.end(); it++){
-        
-        int diff = it->second - fees[0];
-        if(diff <=0)
-            diff = 0;
-        
-        int sum = fees[1] + (int)(ceil((double)diff / fees[2])) * fees[3];
-        result.push_back(sum);
+    // 출차하지 않은 차 처리
+    int total = 23*60 + 59;
+    for(auto it = recordList.begin(); it!= recordList.end(); it++){
+        string number = it->first;        
+        feeList[number] += total-it->second;    
     }
     
-    return result;
+    // 요금 계산 및 정답 배열 추가
+    for(auto it = feeList.begin(); it != feeList.end(); it++){
+        int diff = it->second; // 총 누적 주차 시간
+        int finalFee = fees[1]; // 기본 요금으로 시작
+                
+        if (diff > fees[0])         
+            finalFee += ceil((double)(diff - fees[0]) / fees[2]) * fees[3];
+                        
+        answer.push_back(finalFee); 
+    }
+    return answer;
 }
