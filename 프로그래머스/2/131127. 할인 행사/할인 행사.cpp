@@ -1,38 +1,44 @@
 #include <string>
 #include <vector>
-#include <unordered_map>
-
+#include <map>
+#include <iostream>
 using namespace std;
-unordered_map<string,int>mp;
-int func(vector<string>want, vector<int>number){
-    for(int i=0;i<number.size();i++){
-        auto it = mp.find(want[i]);
-        if(it == mp.end())
-            return 0;
-        if(it -> second != number[i])
-            return 0;
-    }
-    return 1;
-}
 
-int solution(vector<string> want, vector<int> number, vector<string> discount) {
-    int answer = 0, size = 0, left=0, right=0;
-        
-    while(true){
-        if(right == discount.size()){
-            answer += func(want, number);
+map<string,int> mp;
+int answer = 0;
+
+void func(vector<string>wants, vector<int>numbers){
+    
+    bool isPossible = true;
+    for(int i=0;i<wants.size();i++){
+        string wantFruit = wants[i];
+        int wantCount = numbers[i];
+
+        if(mp[wantFruit] < wantCount){
+            isPossible = false;
             break;
         }
-        if(right - left < 10){
-            mp[discount[right]]++;
-            right++;
-        }
-        else if(right - left == 10){
-            answer += func(want, number);
-            mp[discount[left]]--;
-            left++;
-        }                
     }
+    
+    if(isPossible) answer++;
+}
+
+int solution(vector<string> wants, vector<int> numbers, vector<string> discount) {
+    
+    int total = 0;
+    for(int number:numbers)
+        total += number;
+    
+    for(int i=0; i<total;i++)
+        mp[discount[i]]++;
+    func(wants, numbers);
+        
+    for(int i=total; i<discount.size();i++){
+        mp[discount[i]]++;
+        mp[discount[i-total]]--;
                 
+        func(wants, numbers);
+    }
+            
     return answer;
 }
