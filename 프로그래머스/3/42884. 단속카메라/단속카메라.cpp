@@ -1,37 +1,39 @@
 #include <string>
 #include <vector>
 #include <algorithm>
-#include <iostream>
 
 using namespace std;
 
-bool compare(const vector<int>v1, const vector<int>v2){
-    if(v1[1] != v2[1])
+bool compare(vector<int>v1, vector<int>v2){
+    if(v1[1] != v2[1]) // 진출 지점에 대해서 오름차순 정렬
         return v1[1] < v2[1];
     return v1[0] < v2[0];
 }
 int solution(vector<vector<int>> routes) {
-    int answer = 0, time;
+    int answer = 0, cur;
     sort(routes.begin(), routes.end(), compare);
-    
-    for(int i=0;i<routes.size();i++)
-        cout<<routes[i][0]<<" "<<routes[i][1]<<"\n";
-    cout<<'\n';
-    
-    for(int i=0; i<routes.size();i++){
+
+    for(int i=0;i<routes.size();i++){
         if(i == 0){
             answer++;
-            time = routes[i][1];
-            cout<<"설치한 시간: "<<time<<'\n';
+            cur = routes[i][1];
+            continue;
         }
-        else{
-            if(time < routes[i][0]){                
-                answer++;
-                time = routes[i][1];
-                cout<<"설치한 시간: "<<time<<'\n';
-            }
-        }
+        
+        if(cur >= routes[i][0])
+            continue;
+        cur = routes[i][1];
+        answer++;
     }
     
     return answer;
 }
+
+// -20 -15
+// -18 -13
+// -14 -5
+// -5 -3
+
+// -15에 설치하고, 
+// -14에서는 안되니까, -5에 설치하고
+
