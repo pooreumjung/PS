@@ -1,29 +1,27 @@
-#include <string>
 #include <vector>
-#include <cmath>
 #include <algorithm>
+
 using namespace std;
 
 long long solution(int n, vector<int> times) {
-    
-    sort(times.begin(), times.end());
-    long long left = times[0], maxTime = times[times.size()-1];
-    long long right = maxTime * n, answer = maxTime * n;
+        
+    long long max_time = *max_element(times.begin(), times.end());
+    long long right = max_time * n, left = 1;
+    long long answer = right;
     
     while(left <= right){
-        long long mid = (left+right) / 2;
-        long long count = 0;
+        long long mid = left + (right-left)/2;
+        long long total = 0; // 심사 시간 동안 심사 받는 사람의 수
         
-        for(long long time:times)
-            count += mid / time;
+        for(int time:times)
+            total += mid/time;
         
-        if(count >= n){
-            answer = min(answer, mid);
-            right = mid - 1;
+        if(total >= n){
+            answer = mid;
+            right = mid-1;
         }
-        
         else
-            left = mid+1;        
+            left = mid+1;            
     }
     
     return answer;
