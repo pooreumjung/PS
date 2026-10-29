@@ -5,19 +5,20 @@
 using namespace std;
 
 int solution(vector<int> citations) {
-    sort(citations.begin(), citations.end());
-
-    int n = citations.size();
-    int answer = 0;
-
-    for (int i = 0; i < n; i++) {
-        int h = n - i; // 현재 위치부터 끝까지 논문 개수
-
-        if (citations[i] >= h) {
-            answer = h;
+    
+    sort(citations.begin(), citations.end(), greater<int>());    
+    int h_index = 0;
+    
+    for(int i=0; i<citations.size(); i++){
+        if(citations[i] >= i+1)
+            h_index = i+1;
+        else
             break;
-        }
     }
-
-    return answer;
+    
+    // 6 >= 1
+    // 5 >= 2
+    // 3 >= 3
+            
+    return h_index;
 }
