@@ -1,58 +1,60 @@
 #include <iostream>
 #include <vector>
 #include <queue>
+
 using namespace std;
+#define INF 999999999
 
-#define INF 99999999
 vector<vector<pair<int,int>>>graph;
-priority_queue<pair<int,int>>pq;
+vector<int>dist;
 
-vector<int> dijkstra(int start, int N){
-    
-    vector<int>timeArr(N+1, INF);
-    timeArr[start] = 0;
-    pq.push({0,start});
+void dij(int start){
+    priority_queue<pair<int,int>, vector<pair<int,int>>, greater<pair<int,int>>>pq;
+        
+    dist[start] = 0;
+    pq.push({0, start}); // 비용, 노드번호
     
     while(!pq.empty()){
-        int cur_time = pq.top().first;
-        int cur_node = pq.top().second;
+        
+        int curDist = pq.top().first;
+        int curNode = pq.top().second;
         pq.pop();
         
-        for(int i=0; i<graph[cur_node].size();i++){
-            int next_node = graph[cur_node][i].first;
-            int next_time = graph[cur_node][i].second;
-            
-            if(timeArr[cur_node]+next_time < timeArr[next_node]){
-                timeArr[next_node] = timeArr[cur_node]+next_time;
-                pq.push(make_pair(next_time, next_node));
-            }
-        }
+        // 이미 처리된 경우는 pass
+        if(dist[curNode] < curDist) continue;
         
+        for(pair<int,int>cur: graph[curNode]){
+            
+            int nextNode = cur.first;
+            int nextDist = cur.second;
+            
+            if(dist[nextNode] > dist[curNode] + nextDist){
+                dist[nextNode] = dist[curNode] + nextDist;
+                pq.push(make_pair(dist[nextNode], nextNode));
+            }
+        }                
     }
-    
-    return timeArr;
 }
 
-int solution(int N, vector<vector<int>> road, int K) {
-    
+int solution(int N, vector<vector<int>> roads, int K) {
+        
     int answer = 0;
     graph.resize(N+1);
+    dist.resize(N+1, INF);
     
-    // graph 세팅
-    for(int i=0; i<road.size();i++){
-        int node1 = road[i][0];
-        int node2 = road[i][1];
-        int time = road[i][2];
+    for(vector<int>road:roads){
+        int node1 = road[0];
+        int node2 = road[1];
+        int cost = road[2];
         
-        graph[node1].push_back(make_pair(node2, time));
-        graph[node2].push_back(make_pair(node1, time));
-    }
-    
-    vector<int>timeArr = dijkstra(1, N);
-    for(int i=1;i<timeArr.size();i++){
-        if(timeArr[i] <= K)
-            answer++;
+        graph[node1].push_back(make_pair(node2,cost));
+        graph[node2].push_back(make_pair(node1,cost));
     }
         
+    dij(1);
+    for(int i = 1; i<=N; i++){        
+        if(dist[i] <= K) answer++;            
+    }
+    
     return answer;
 }
