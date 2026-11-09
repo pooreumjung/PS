@@ -10,13 +10,13 @@ int solution(vector<vector<int>> board)
     dp.resize(row, vector<int>(column,0));
     
     dp = board;
-    if(row == 1)
-        return 1;
     
     for(int i=0;i<row; i++){
         for(int j=0; j<column; j++){
-            if(i == 0 || j == 0)                
-                continue;            
+            if(i == 0 || j == 0){                
+                answer = max(answer, dp[i][j]);
+                continue;        
+            }
             
             if(board[i][j] == 0)
                 continue;
